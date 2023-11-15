@@ -12,7 +12,7 @@ public partial class Paddle : Node2D
 
   public void UpdateTexturePositions()
   {
-    _removeAllPaddleSegments();
+    RemoveAllPaddleSegmentNodes();
 
     var leftCap = GetNode<Sprite2D>("LeftCap");
     var leftCapWidth = leftCap.Texture.GetWidth();
@@ -30,12 +30,12 @@ public partial class Paddle : Node2D
     var segmentX = (-halfTotal) + leftCapWidth + (_paddleTextureWidth / 2);
     for (int i = 0; i < _size; i++)
     {
-      _addPaddleSegmentAtPosition(segmentX);
+      AddPaddleSegmentAtXCoordinate(segmentX);
       segmentX += _paddleTextureWidth;
     }
   }
 
-  private void _addPaddleSegmentAtPosition(int x)
+  private void AddPaddleSegmentAtXCoordinate(int x)
   {
     var newSegment = new Sprite2D
     {
@@ -47,7 +47,7 @@ public partial class Paddle : Node2D
     newSegment.AddToGroup("paddleSegments");
   }
 
-  private void _removeAllPaddleSegments()
+  private void RemoveAllPaddleSegmentNodes()
   {
     GetTree().CallGroup("paddleSegments", Node.MethodName.QueueFree);
   }
