@@ -12,11 +12,11 @@ script = ExtResource("1_fmgf5")
 texture = ExtResource("2_4vwty")
 
 [node name="LeftCap" type="Sprite2D" parent="."]
-position = Vector2(39, 27)
+position = Vector2(-24, 0)
 texture = ExtResource("2_p3cvn")
 
 [node name="RightCap" type="Sprite2D" parent="."]
-position = Vector2(88, 27)
+position = Vector2(24, 0)
 texture = ExtResource("3_hg1bd")
 
 [node name="Timer" type="Timer" parent="."]
