@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public partial class Paddle : Node2D
+public partial class Paddle : Area2D
 {
   // _size refers to the number of paddle "segments"
   private int _size = 2;
@@ -11,7 +11,7 @@ public partial class Paddle : Node2D
   private int _paddleTextureWidth;
   private Texture2D _paddleTexture;
 
-  public void UpdateTexturePositions()
+  public void UpdateNodePositions()
   {
     RemoveAllPaddleSegmentNodes();
 
@@ -19,6 +19,8 @@ public partial class Paddle : Node2D
     var leftCapWidth = leftCap.Texture.GetWidth();
     var rightCap = GetNode<Sprite2D>("RightCap");
     var rightCapWidth = rightCap.Texture.GetWidth();
+
+    var capHeight = rightCap.Texture.GetHeight();
 
     var numberOfNodes = (2 * _size) - 1; // e.g. size 2 = 3 segment nodes, size 3 = 5, etc.
 
@@ -37,6 +39,10 @@ public partial class Paddle : Node2D
       AddPaddleSegmentAtXCoordinate(segmentX);
       segmentX += _paddleTextureWidth;
     }
+
+    // lastly resize collision bounds
+    var collisionShape = (RectangleShape2D)GetNode<CollisionShape2D>("CollisionArea").Shape;
+    collisionShape.Size = new Vector2(totalWidth, capHeight);
   }
 
   private void AddPaddleSegmentAtXCoordinate(int x)
@@ -59,7 +65,7 @@ public partial class Paddle : Node2D
   public void UpdateSize(int numberOfSegments)
   {
     _size = Math.Clamp(numberOfSegments, 1, MaxSize);
-    UpdateTexturePositions();
+    UpdateNodePositions();
   }
 
   public void IncreaseSize()
@@ -79,6 +85,6 @@ public partial class Paddle : Node2D
     _paddleTextureWidth = _paddleTexture.GetWidth();
     paddleTextureNode.Hide();
 
-    UpdateTexturePositions();
+    UpdateNodePositions();
   }
 }
