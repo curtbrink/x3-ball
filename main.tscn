@@ -7,3 +7,9 @@
 script = ExtResource("1_htyq8")
 
 [node name="Paddle" parent="." instance=ExtResource("1_u5cxa")]
+
+[node name="SizeTimer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[connection signal="timeout" from="SizeTimer" to="." method="OnSizeTimerTimeout"]

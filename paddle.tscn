@@ -22,9 +22,5 @@ texture = ExtResource("2_p3cvn")
 position = Vector2(24, 0)
 texture = ExtResource("3_hg1bd")
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 2.0
-autostart = true
-
 [node name="CollisionArea" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_5qosu")

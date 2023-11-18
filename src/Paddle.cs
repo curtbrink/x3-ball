@@ -15,26 +15,18 @@ public partial class Paddle : Area2D
   {
     RemoveAllPaddleSegmentNodes();
 
-    var leftCap = GetNode<Sprite2D>("LeftCap");
-    var leftCapWidth = leftCap.Texture.GetWidth();
-    var rightCap = GetNode<Sprite2D>("RightCap");
-    var rightCapWidth = rightCap.Texture.GetWidth();
-
-    var capHeight = rightCap.Texture.GetHeight();
-
-    var numberOfNodes = (2 * _size) - 1; // e.g. size 2 = 3 segment nodes, size 3 = 5, etc.
-
-    // get total width
-    var totalWidth = leftCapWidth + rightCapWidth + (numberOfNodes * _paddleTextureWidth);
+    var totalWidth = ComputeTotalWidth();
     var halfTotal = totalWidth / 2;
 
+    var leftWidth = GetLeftCapWidth();
+
     // set left and right cap positions
-    leftCap.Position = new Vector2((-halfTotal) + (leftCapWidth / 2), 0);
-    rightCap.Position = new Vector2(halfTotal - (rightCapWidth / 2), 0);
+    GetNode<Sprite2D>("LeftCap").Position = new Vector2((-halfTotal) + (leftWidth / 2), 0);
+    GetNode<Sprite2D>("RightCap").Position = new Vector2(halfTotal - (GetRightCapWidth() / 2), 0);
 
     // iterate paddle segments
-    var segmentX = (-halfTotal) + leftCapWidth + (_paddleTextureWidth / 2);
-    for (int i = 0; i < numberOfNodes; i++)
+    var segmentX = (-halfTotal) + leftWidth + (_paddleTextureWidth / 2);
+    for (int i = 0; i < GetNumberOfSegmentNodes(); i++)
     {
       AddPaddleSegmentAtXCoordinate(segmentX);
       segmentX += _paddleTextureWidth;
@@ -42,7 +34,7 @@ public partial class Paddle : Area2D
 
     // lastly resize collision bounds
     var collisionShape = (RectangleShape2D)GetNode<CollisionShape2D>("CollisionArea").Shape;
-    collisionShape.Size = new Vector2(totalWidth, capHeight);
+    collisionShape.Size = new Vector2(totalWidth, GetCapHeight());
   }
 
   private void AddPaddleSegmentAtXCoordinate(int x)
@@ -76,6 +68,42 @@ public partial class Paddle : Area2D
   public void DecreaseSize()
   {
     UpdateSize(_size - 1);
+  }
+
+  public int GetXBuffer()
+  {
+    return ComputeTotalWidth() / 2;
+  }
+
+  private int ComputeTotalWidth()
+  {
+    // get total width
+    return GetLeftCapWidth()
+      + GetRightCapWidth()
+      + (GetNumberOfSegmentNodes() * _paddleTextureWidth);
+  }
+
+  private int GetLeftCapWidth()
+  {
+    return GetNode<Sprite2D>("LeftCap").Texture.GetWidth();
+  }
+
+  private int GetRightCapWidth()
+  {
+    return GetNode<Sprite2D>("RightCap").Texture.GetWidth();
+  }
+
+  private int GetNumberOfSegmentNodes()
+  {
+    return (2 * _size) - 1;
+  }
+
+  private int GetCapHeight()
+  {
+    return Math.Max(
+      GetNode<Sprite2D>("LeftCap").Texture.GetHeight(),
+      GetNode<Sprite2D>("RightCap").Texture.GetHeight()
+    );
   }
 
   public override void _Ready()
