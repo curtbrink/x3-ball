@@ -5,6 +5,11 @@ public partial class Main : Node
 {
   private Rect2 _viewport;
 
+  private int _ballVelocity;
+  private Vector2 _ballHeading;
+
+  private RandomNumberGenerator rng = new();
+
   public override void _Ready()
   {
     _viewport = GetViewport().GetVisibleRect();
@@ -12,6 +17,11 @@ public partial class Main : Node
     var paddle = GetNode<Paddle>("Paddle");
     paddle.UpdateSize(1);
     paddle.Position = new Vector2(_viewport.Size.X / 2, _viewport.Size.Y - 50);
+
+    var ball = GetNode<Ball>("Ball");
+    ball.Position = new Vector2(100, 100);
+    _ballHeading = Vector2.Down;
+    _ballVelocity = 200;
 
     Input.MouseMode = Input.MouseModeEnum.Captured;
   }
@@ -22,6 +32,8 @@ public partial class Main : Node
     {
       GetTree().Quit();
     }
+
+    GetNode<Ball>("Ball").Position += _ballHeading * (_ballVelocity * (float)delta);
   }
 
   public override void _Input(InputEvent @event)
@@ -40,8 +52,44 @@ public partial class Main : Node
     }
   }
 
-  private void OnSizeTimerTimeout()
+  private void OnBallAreaEntered(Area2D area)
   {
-    GetNode<Paddle>("Paddle").IncreaseSize();
+    switch (area.Name)
+    {
+      case "Paddle":
+        handleWallBounce(Vector2.Up);
+        break;
+      case "LeftWall":
+        handleWallBounce(Vector2.Right);
+        break;
+      case "RightWall":
+        handleWallBounce(Vector2.Left);
+        break;
+      case "TopWall":
+        handleWallBounce(Vector2.Down);
+        break;
+      case "BottomWall":
+        resetBall();
+        break;
+    }
+  }
+
+  private void handlePaddleBounce()
+  {
+    _ballHeading = (Vector2.Up + Vector2.Left).Normalized();
+  }
+
+  private void handleWallBounce(Vector2 normal)
+  {
+    _ballHeading = _ballHeading.Bounce(normal).Normalized();
+  }
+
+  private void resetBall()
+  {
+    GetNode<Ball>("Ball").Position = new Vector2(100, 100);
+    _ballHeading = new Vector2(
+      rng.RandfRange(-1.0f, 1.0f),
+      rng.RandfRange(-1.0f, 1.0f)
+    ).Normalized();
   }
 }
