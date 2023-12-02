@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public partial class Paddle : Area2D
+public partial class Paddle : Node2D
 {
   // _size refers to the number of paddle "segments"
   private int _size = 2;
@@ -11,21 +11,33 @@ public partial class Paddle : Area2D
   private int _paddleTextureWidth;
   private Texture2D _paddleTexture;
 
+  [Signal]
+  public delegate void CollisionTopEventHandler();
+
+  [Signal]
+  public delegate void CollisionLeftEventHandler();
+
+  [Signal]
+  public delegate void CollisionRightEventHandler();
+
   public void UpdateNodePositions()
   {
     RemoveAllPaddleSegmentNodes();
 
     var totalWidth = ComputeTotalWidth();
-    var halfTotal = totalWidth / 2;
+    var halfWidth = totalWidth / 2;
+
+    var totalHeight = GetCapHeight();
+    var halfHeight = totalHeight / 2;
 
     var leftWidth = GetLeftCapWidth();
 
     // set left and right cap positions
-    GetNode<Sprite2D>("LeftCap").Position = new Vector2((-halfTotal) + (leftWidth / 2), 0);
-    GetNode<Sprite2D>("RightCap").Position = new Vector2(halfTotal - (GetRightCapWidth() / 2), 0);
+    GetNode<Sprite2D>("LeftCap").Position = new Vector2((-halfWidth) + (leftWidth / 2), 0);
+    GetNode<Sprite2D>("RightCap").Position = new Vector2(halfWidth - (GetRightCapWidth() / 2), 0);
 
     // iterate paddle segments
-    var segmentX = (-halfTotal) + leftWidth + (_paddleTextureWidth / 2);
+    var segmentX = (-halfWidth) + leftWidth + (_paddleTextureWidth / 2);
     for (int i = 0; i < GetNumberOfSegmentNodes(); i++)
     {
       AddPaddleSegmentAtXCoordinate(segmentX);
@@ -33,8 +45,20 @@ public partial class Paddle : Area2D
     }
 
     // lastly resize collision bounds
-    var collisionShape = (RectangleShape2D)GetNode<CollisionShape2D>("CollisionArea").Shape;
-    collisionShape.Size = new Vector2(totalWidth, GetCapHeight());
+    var collisionTop = GetNode<CollisionShape2D>("CollisionTop/CollisionTopArea");
+    var collisionTopShape = (RectangleShape2D)collisionTop.Shape;
+    collisionTopShape.Size = new Vector2(totalWidth, 1);
+    collisionTop.Position = new Vector2(0, (-halfHeight) + 1);
+
+    var collisionLeft = GetNode<CollisionShape2D>("CollisionLeft/CollisionLeftArea");
+    var collisionLeftShape = (RectangleShape2D)collisionLeft.Shape;
+    collisionLeftShape.Size = new Vector2(2, GetCapHeight() - 4);
+    collisionLeft.Position = new Vector2(-halfWidth + 1, 0);
+
+    var collisionRight = GetNode<CollisionShape2D>("CollisionRight/CollisionRightArea");
+    var collisionRightShape = (RectangleShape2D)collisionRight.Shape;
+    collisionRightShape.Size = new Vector2(2, GetCapHeight() - 4);
+    collisionRight.Position = new Vector2(halfWidth - 1, 0);
   }
 
   private void AddPaddleSegmentAtXCoordinate(int x)
@@ -114,5 +138,20 @@ public partial class Paddle : Area2D
     paddleTextureNode.Hide();
 
     UpdateNodePositions();
+  }
+
+  private void OnCollisionTopAreaEntered(Area2D area)
+  {
+    EmitSignal(SignalName.CollisionTop, area);
+  }
+
+  private void OnCollisionLeftAreaEntered(Area2D area)
+  {
+    EmitSignal(SignalName.CollisionLeft, area);
+  }
+
+  private void OnCollisionRightAreaEntered(Area2D area)
+  {
+    EmitSignal(SignalName.CollisionRight, area);
   }
 }

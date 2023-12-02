@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dj1lyjaklwvr2"]
+[gd_scene load_steps=8 format=3 uid="uid://dj1lyjaklwvr2"]
 
 [ext_resource type="Script" path="res://src/Paddle.cs" id="1_fmgf5"]
 [ext_resource type="Texture2D" uid="uid://c76sn2dbgoyx2" path="res://assets/paddle/segment.png" id="2_4vwty"]
@@ -6,9 +6,15 @@
 [ext_resource type="Texture2D" uid="uid://ek7ccksrlowo" path="res://assets/paddle/cap_right.png" id="3_hg1bd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5qosu"]
-size = Vector2(64, 20)
+size = Vector2(64, 1)
 
-[node name="Paddle" type="Area2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tbyq6"]
+size = Vector2(2, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_20djy"]
+size = Vector2(2, 16)
+
+[node name="Paddle" type="Node2D"]
 script = ExtResource("1_fmgf5")
 
 [node name="PaddleTexture" type="Sprite2D" parent="."]
@@ -22,5 +28,24 @@ texture = ExtResource("2_p3cvn")
 position = Vector2(24, 0)
 texture = ExtResource("3_hg1bd")
 
-[node name="CollisionArea" type="CollisionShape2D" parent="."]
+[node name="CollisionTop" type="Area2D" parent="."]
+
+[node name="CollisionTopArea" type="CollisionShape2D" parent="CollisionTop"]
+position = Vector2(0, -8.5)
 shape = SubResource("RectangleShape2D_5qosu")
+
+[node name="CollisionLeft" type="Area2D" parent="."]
+
+[node name="CollisionLeftArea" type="CollisionShape2D" parent="CollisionLeft"]
+position = Vector2(-31, 0)
+shape = SubResource("RectangleShape2D_tbyq6")
+
+[node name="CollisionRight" type="Area2D" parent="."]
+
+[node name="CollisionRightArea" type="CollisionShape2D" parent="CollisionRight"]
+position = Vector2(31, 0)
+shape = SubResource("RectangleShape2D_20djy")
+
+[connection signal="area_entered" from="CollisionTop" to="." method="OnCollisionTopAreaEntered"]
+[connection signal="area_entered" from="CollisionLeft" to="." method="OnCollisionLeftAreaEntered"]
+[connection signal="area_entered" from="CollisionRight" to="." method="OnCollisionRightAreaEntered"]

@@ -44,4 +44,7 @@ shape = SubResource("WorldBoundaryShape2D_amj0w")
 position = Vector2(640, 0)
 shape = SubResource("WorldBoundaryShape2D_a2cxm")
 
+[connection signal="CollisionLeft" from="Paddle" to="." method="OnPaddleCollisionLeft"]
+[connection signal="CollisionRight" from="Paddle" to="." method="OnPaddleCollisionRight"]
+[connection signal="CollisionTop" from="Paddle" to="." method="OnPaddleCollisionTop"]
 [connection signal="area_entered" from="Ball" to="." method="OnBallAreaEntered"]

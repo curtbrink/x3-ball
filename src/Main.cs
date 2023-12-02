@@ -56,9 +56,6 @@ public partial class Main : Node
   {
     switch (area.Name)
     {
-      case "Paddle":
-        handleWallBounce(Vector2.Up);
-        break;
       case "LeftWall":
         handleWallBounce(Vector2.Right);
         break;
@@ -91,5 +88,20 @@ public partial class Main : Node
       rng.RandfRange(-1.0f, 1.0f),
       rng.RandfRange(-1.0f, 1.0f)
     ).Normalized();
+  }
+
+  private void OnPaddleCollisionLeft(Area2D area)
+  {
+    handleWallBounce(Vector2.Left);
+  }
+
+  private void OnPaddleCollisionRight(Area2D area)
+  {
+    handleWallBounce(Vector2.Right);
+  }
+
+  private void OnPaddleCollisionTop(Area2D area)
+  {
+    handleWallBounce(Vector2.Up);
   }
 }
